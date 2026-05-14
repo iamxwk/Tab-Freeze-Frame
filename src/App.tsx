@@ -21,9 +21,11 @@ export default function App() {
         let suspendedCount = 0;
         for (const [tabId, state] of Object.entries(tabStates)) {
           const id = parseInt(tabId);
-          if (currentTabIds.has(id) && state?.isSuspended) {
+          if (currentTabIds.has(id)) {
             validTabStates[id] = state;
-            suspendedCount++;
+            if (state?.isSuspended) {
+              suspendedCount++;
+            }
           }
         }
 

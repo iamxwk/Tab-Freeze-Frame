@@ -56,21 +56,32 @@ const captureActiveTab = async () => {
   }
 };
 
-// Update activity timestamp without full screenshot (for internal performance)
-const updateTabActivity = async (tabId: number) => {
+const updateOrCreateTabActivity = async (tabId: number) => {
   const data = await chrome.storage.local.get(STORAGE_KEYS.TABS);
   const tabStates = data[STORAGE_KEYS.TABS] || {};
 
-  if (tabStates[tabId]) {
-    tabStates[tabId].lastActive = Date.now();
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    if (!tab?.url || !tab.url.startsWith('http')) return;
+
+    if (tabStates[tabId]) {
+      tabStates[tabId].lastActive = Date.now();
+    } else {
+      tabStates[tabId] = {
+        lastActive: Date.now(),
+        url: tab.url,
+        title: tab.title || '',
+        favIconUrl: tab.favIconUrl,
+        isSuspended: false
+      };
+    }
     await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });
-  }
+  } catch {}
 };
 
 // Listeners for activity
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  updateTabActivity(tabId);
-  // Give it a moment to load and render before capturing
+  updateOrCreateTabActivity(tabId);
   setTimeout(captureActiveTab, 2000);
 });
 
@@ -144,11 +155,25 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 });
 
 // Cleanup when tab is closed
-chrome.tabs.onRemoved.addListener(async (tabId) => {
+let pendingRemovals: number[] = [];
+let removalTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const flushRemovals = async () => {
+  if (pendingRemovals.length === 0) return;
+  const toRemove = [...pendingRemovals];
+  pendingRemovals = [];
   const data = await chrome.storage.local.get(STORAGE_KEYS.TABS);
   const tabStates = data[STORAGE_KEYS.TABS] || {};
-  delete tabStates[tabId];
+  for (const tabId of toRemove) {
+    delete tabStates[tabId];
+  }
   await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });
+};
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+  pendingRemovals.push(tabId);
+  if (removalTimeout) clearTimeout(removalTimeout);
+  removalTimeout = setTimeout(flushRemovals, 100);
 });
 
 chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
