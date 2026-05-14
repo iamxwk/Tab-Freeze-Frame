@@ -1,20 +1,45 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Tab Freeze Frame
 
-# Run and deploy your AI Studio app
+A Chrome extension that automatically suspends idle tabs and displays visual snapshots, saving memory without losing your place.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/1bd71664-bf13-4408-92ba-8c20b66c4dd6
+- **Automatic Suspension** - Tabs idle for a specified duration are automatically suspended
+- **Visual Snapshots** - Each suspended tab shows a screenshot preview
+- **Instant Restore** - Click anywhere on the suspended page to instantly restore the original tab
+- **URL Whitelist** - Regex patterns to exclude specific sites from suspension
+- **Privacy First** - All data stored locally, nothing uploaded to any server
+- **i18n Support** - English and Simplified Chinese
 
-## Run Locally
+## Usage
 
-**Prerequisites:**  Node.js
+1. Open `chrome://extensions`
+2. Enable "Developer mode"
+3. Click "Load unpacked" and select the `dist` folder
+4. Click the extension icon to open popup
+5. Configure timeout and whitelist in Options
 
+## Build from Source
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+npm run build
+```
+
+Output is in the `dist` folder.
+
+## Configuration
+
+- **Suspend Timeout** - How long a tab must be idle before suspension (1-120 minutes)
+- **URL Whitelist** - Regex patterns for URLs that should never be suspended (one per line)
+
+## Tech Stack
+
+- React 19 + TypeScript
+- Vite
+- TailwindCSS 4
+- Chrome Extension Manifest V3
+
+## License
+
+MIT
