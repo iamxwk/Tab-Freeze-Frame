@@ -16,8 +16,8 @@ const STORAGE_KEYS = {
   SETTINGS: 'extension_settings',
 };
 
-// Default timeout: 1 minute
-const DEFAULT_TIMEOUT = 1;
+// Default timeout: 20 minute
+const DEFAULT_TIMEOUT = 20;
 
 // Initialize when installed
 chrome.runtime.onInstalled.addListener(() => {
@@ -60,7 +60,7 @@ const captureActiveTab = async () => {
 const updateTabActivity = async (tabId: number) => {
   const data = await chrome.storage.local.get(STORAGE_KEYS.TABS);
   const tabStates = data[STORAGE_KEYS.TABS] || {};
-  
+
   if (tabStates[tabId]) {
     tabStates[tabId].lastActive = Date.now();
     await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });

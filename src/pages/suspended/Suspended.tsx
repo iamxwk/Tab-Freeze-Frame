@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MousePointerClick, RefreshCw, Zap } from 'lucide-react';
+import { MousePointerClick, RefreshCw } from 'lucide-react';
 import { motion } from 'motion/react';
 import { i18n } from '../../utils/i18n';
 
@@ -67,9 +67,7 @@ export default function SuspendedPage() {
           {state?.favIconUrl ? (
             <img src={state.favIconUrl} alt="" className="w-10 h-10 rounded-xl" />
           ) : (
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Zap className="text-white w-6 h-6 fill-white" />
-            </div>
+            <img src="icon.png" alt="" className="w-10 h-10 rounded-xl" />
           )}
           <h1 className="text-2xl font-bold tracking-tight text-white">
             {state?.title || i18n('suspended_untitled')}
