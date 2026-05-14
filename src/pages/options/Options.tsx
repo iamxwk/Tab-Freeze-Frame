@@ -7,6 +7,7 @@ export default function OptionsPage() {
   const [timeout, setTimeoutVal] = useState(1);
   const [whitelist, setWhitelist] = useState('');
   const [saved, setSaved] = useState(false);
+  const [version, setVersion] = useState('');
 
   useEffect(() => {
     if (chrome.storage) {
@@ -16,6 +17,9 @@ export default function OptionsPage() {
           setWhitelist(data.extension_settings.whitelist || '');
         }
       });
+    }
+    if (chrome.runtime?.getManifest()) {
+      setVersion(chrome.runtime.getManifest().version || '');
     }
   }, []);
 
@@ -109,7 +113,7 @@ export default function OptionsPage() {
           </section>
 
           <div className="flex items-center justify-between pt-6">
-            <p className="text-xs text-slate-600 italic">{i18n('settings_footer')}</p>
+            <p className="text-xs text-slate-600 italic">Version {version} • Powered by xwk<br/>Email: <a href="mailto:2380567@gmail.com?subject=About Tab Freeze Frame">2380567@gmail.com</a></p>
             <button
               onClick={handleSave}
               className={`

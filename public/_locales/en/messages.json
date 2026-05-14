@@ -79,10 +79,6 @@
     "message": "Tip: You can click the link at the bottom left of the snapshot to copy the original URL.",
     "description": "Help tip"
   },
-  "settings_footer": {
-    "message": "Version 1.0.0 • Powered by xwk",
-    "description": "Footer text"
-  },
   "settings_saved": {
     "message": "Saved!",
     "description": "Save confirmation"

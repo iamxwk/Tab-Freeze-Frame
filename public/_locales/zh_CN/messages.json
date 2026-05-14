@@ -79,10 +79,6 @@
     "message": "提示：你可以点击快照左下角的链接直接复制原始 URL。",
     "description": "Help tip"
   },
-  "settings_footer": {
-    "message": "版本 1.0.0 • 由 xwk 强力驱动",
-    "description": "Footer text"
-  },
   "settings_saved": {
     "message": "已保存！",
     "description": "Save confirmation"
