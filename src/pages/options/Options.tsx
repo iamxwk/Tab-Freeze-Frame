@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Save, Clock, ShieldCheck, Info, Globe } from 'lucide-react';
+import { Save, Clock, ShieldCheck, Info, Globe, List, LayoutList, Timer } from 'lucide-react';
 import { motion } from 'motion/react';
 import { i18n } from '../../utils/i18n';
+
+interface TabState {
+  lastActive: number;
+  url: string;
+  title: string;
+  favIconUrl?: string;
+  screenshot?: string;
+  isSuspended?: boolean;
+}
 
 export default function OptionsPage() {
   const [timeout, setTimeoutVal] = useState(1);
   const [whitelist, setWhitelist] = useState('');
   const [saved, setSaved] = useState(false);
   const [version, setVersion] = useState('');
+  const [tabStates, setTabStates] = useState<Record<number, TabState>>({});
+  const [freezeCountdowns, setFreezeCountdowns] = useState<Record<number, number>>({});
+  const [hoveredTab, setHoveredTab] = useState<{ tabId: number; state: TabState; x: number; y: number } | null>(null);
 
   useEffect(() => {
     if (chrome.storage) {
@@ -17,11 +29,33 @@ export default function OptionsPage() {
           setWhitelist(data.extension_settings.whitelist || '');
         }
       });
+      chrome.storage.local.get('tab_states', (data) => {
+        if (data.tab_states) {
+          setTabStates(data.tab_states);
+        }
+      });
     }
     if (chrome.runtime?.getManifest()) {
       setVersion(chrome.runtime.getManifest().version || '');
     }
   }, []);
+
+  useEffect(() => {
+    const updateCountdowns = () => {
+      const newCountdowns: Record<number, number> = {};
+      Object.entries(tabStates).forEach(([tabId, state]) => {
+        const elapsed = Date.now() - state.lastActive;
+        const timeoutMs = timeout * 60 * 1000;
+        const remaining = Math.max(0, timeoutMs - elapsed);
+        newCountdowns[parseInt(tabId)] = remaining;
+      });
+      setFreezeCountdowns(newCountdowns);
+    };
+
+    updateCountdowns();
+    const interval = setInterval(updateCountdowns, 1000);
+    return () => clearInterval(interval);
+  }, [tabStates, timeout]);
 
   const handleSave = () => {
     if (chrome.storage) {
@@ -38,6 +72,26 @@ export default function OptionsPage() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     }
+  };
+
+  const formatLastActive = (timestamp: number) => {
+    const d = new Date(timestamp);
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+
+  const getFreezeRemaining = (tabId: number) => {
+    const remaining = freezeCountdowns[tabId];
+    if (remaining === undefined) return null;
+    if (remaining <= 0) return '0m 0s';
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    return `${mins}m ${secs}s`;
+  };
+
+  const handleTabClick = (tabId: number) => {
+    chrome.tabs.update(tabId, { active: true });
+    chrome.windows.update(tabId, { focused: true });
   };
 
   return (
@@ -112,6 +166,71 @@ export default function OptionsPage() {
             </div>
           </section>
 
+          <section className="bg-slate-900/50 border border-white/5 rounded-3xl p-8 backdrop-blur-sm">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-400">
+                <List className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-white">{i18n('tab_states_title')}</h2>
+                <p className="text-sm text-slate-500">{i18n('tab_states_description')}</p>
+              </div>
+            </div>
+
+            {Object.keys(tabStates).length === 0 ? (
+              <div className="text-center py-8 text-slate-500">
+                <LayoutList className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p>{i18n('tab_states_empty')}</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-slate-500 border-b border-white/5">
+                      <th className="text-left py-3 px-4 font-medium">{i18n('tab_states_icon')}</th>
+                      <th className="text-left py-3 px-4 font-medium">{i18n('tab_states_title_col')}</th>
+                      <th className="text-left py-3 px-4 font-medium">{i18n('tab_states_last_active')}</th>
+                      <th className="text-left py-3 px-4 font-medium">{i18n('tab_states_freeze_remaining')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(tabStates).map(([tabId, state]) => (
+                      <tr key={tabId} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td className="py-3 px-4">
+                          <img
+                            src={state.favIconUrl || 'icon.png'}
+                            alt=""
+                            className="w-5 h-5 rounded"
+                            onError={(e) => { (e.target as HTMLImageElement).src = 'icon.png'; }}
+                          />
+                        </td>
+                        <td className="py-3 px-4">
+                          <button
+                            onClick={() => handleTabClick(parseInt(tabId))}
+                            onMouseEnter={(e) => setHoveredTab({ tabId: parseInt(tabId), state, x: e.clientX, y: e.clientY })}
+                            onMouseLeave={() => setHoveredTab(null)}
+                            className="text-slate-200 hover:text-[#569ac4] text-left truncate max-w-[200px] block cursor-pointer"
+                          >
+                            {state.title || i18n('tab_states_untitled')}
+                          </button>
+                        </td>
+                        <td className="py-3 px-4 text-slate-400 font-mono text-xs">
+                          {formatLastActive(state.lastActive)}
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`inline-flex items-center gap-1 font-mono text-xs ${state.isSuspended ? 'text-amber-400' : 'text-slate-400'}`}>
+                            <Timer className="w-3 h-3" />
+                            {getFreezeRemaining(parseInt(tabId))}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+
           <div className="flex items-center justify-between pt-6">
             <p className="text-xs text-slate-600 italic">Version {version} • Powered by xwk<br/>Email: <a href="mailto:2380567@gmail.com?subject=About Tab Freeze Frame">2380567@gmail.com</a></p>
             <button
@@ -127,6 +246,18 @@ export default function OptionsPage() {
           </div>
         </motion.div>
       </div>
+      {hoveredTab && hoveredTab.state.screenshot && (
+        <div
+          className="fixed z-[100] pointer-events-none"
+          style={{ left: hoveredTab.x + 10, top: hoveredTab.y + 10 }}
+        >
+          <img
+            src={hoveredTab.state.screenshot}
+            alt=""
+            className="w-64 rounded-lg border border-white/10 shadow-2xl"
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -110,5 +110,41 @@
   "suspended_demo_title": {
     "message": "GitHub Trending - 示例页面",
     "description": "Demo mode title"
+  },
+  "tab_states_title": {
+    "message": "标签页状态",
+    "description": "Tab states section title"
+  },
+  "tab_states_description": {
+    "message": "正在追踪的标签页",
+    "description": "Tab states section description"
+  },
+  "tab_states_empty": {
+    "message": "暂无追踪的标签页",
+    "description": "Empty state message"
+  },
+  "tab_states_icon": {
+    "message": "图标",
+    "description": "Table header for icon"
+  },
+  "tab_states_title_col": {
+    "message": "标题",
+    "description": "Table header for title"
+  },
+  "tab_states_last_active": {
+    "message": "最后活跃",
+    "description": "Table header for last active time"
+  },
+  "tab_states_freeze_remaining": {
+    "message": "冻结倒计时",
+    "description": "Table header for freeze countdown"
+  },
+  "tab_states_active": {
+    "message": "活跃中",
+    "description": "Tab is active not frozen"
+  },
+  "tab_states_untitled": {
+    "message": "未命名",
+    "description": "Default title for unknown tabs"
   }
 }

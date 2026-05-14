@@ -26,9 +26,28 @@ chrome.runtime.onInstalled.addListener(() => {
     [STORAGE_KEYS.TABS]: {},
   });
 
-  // Check every minute
-  chrome.alarms.create('check_idle_tabs', { periodInMinutes: 1 });
+  scheduleNextCheck();
 });
+
+async function scheduleNextCheck() {
+  const data = await chrome.storage.local.get([STORAGE_KEYS.TABS, STORAGE_KEYS.SETTINGS]);
+  const tabStates = data[STORAGE_KEYS.TABS] || {};
+  const settings = data[STORAGE_KEYS.SETTINGS];
+  const timeoutMs = (settings?.timeoutMinutes || DEFAULT_TIMEOUT) * 60 * 1000;
+  const now = Date.now();
+
+  let nextCheckTime = now + 60000;
+
+  for (const [, state] of Object.entries(tabStates)) {
+    if (state.isSuspended) continue;
+    const freezeTime = state.lastActive + timeoutMs;
+    if (freezeTime > now && freezeTime < nextCheckTime) {
+      nextCheckTime = freezeTime;
+    }
+  }
+
+  chrome.alarms.create('check_idle_tabs', { when: nextCheckTime });
+}
 
 const captureActiveTab = async () => {
   try {
@@ -51,6 +70,7 @@ const captureActiveTab = async () => {
     };
 
     await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });
+    scheduleNextCheck();
   } catch (e) {
     console.error('Snapshot failed:', e);
   }
@@ -76,6 +96,7 @@ const updateOrCreateTabActivity = async (tabId: number) => {
       };
     }
     await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });
+    scheduleNextCheck();
   } catch {}
 };
 
@@ -151,6 +172,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
         }
       }
     }
+    scheduleNextCheck();
   }
 });
 

@@ -110,5 +110,41 @@
   "suspended_demo_title": {
     "message": "GitHub Trending - Demo Page",
     "description": "Demo mode title"
+  },
+  "tab_states_title": {
+    "message": "Tab States",
+    "description": "Tab states section title"
+  },
+  "tab_states_description": {
+    "message": "Active tabs being tracked for freeze",
+    "description": "Tab states section description"
+  },
+  "tab_states_empty": {
+    "message": "No tabs being tracked yet",
+    "description": "Empty state message"
+  },
+  "tab_states_icon": {
+    "message": "Icon",
+    "description": "Table header for icon"
+  },
+  "tab_states_title_col": {
+    "message": "Title",
+    "description": "Table header for title"
+  },
+  "tab_states_last_active": {
+    "message": "Last Active",
+    "description": "Table header for last active time"
+  },
+  "tab_states_freeze_remaining": {
+    "message": "Freeze Remaining",
+    "description": "Table header for freeze countdown"
+  },
+  "tab_states_active": {
+    "message": "Active",
+    "description": "Tab is active not frozen"
+  },
+  "tab_states_untitled": {
+    "message": "Untitled",
+    "description": "Default title for unknown tabs"
   }
 }
