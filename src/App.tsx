@@ -76,26 +76,6 @@ export default function App() {
             <div className="text-xs text-slate-500">{i18n('popup_memory')}</div>
           </div>
         </div>
-
-        <div className="bg-gradient-to-br from-[#569ac4] to-[#4a7a9e] p-4 rounded-xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-sm font-bold flex items-center gap-1.5">
-                <Power className="w-3.5 h-3.5" />
-                {i18n('popup_running')}
-              </div>
-              <div className="text-xs text-blue-200/70 mt-0.5">{i18n('popup_auto_monitor')}</div>
-            </div>
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-          </div>
-        </div>
-
-        <button
-          onClick={() => window.open('options.html', '_blank')}
-          className="w-full bg-[#569ac4] hover:bg-[#4a8ab4] text-white py-2.5 rounded-lg font-medium text-sm transition-colors"
-        >
-          {i18n('popup_settings')}
-        </button>
       </div>
     </div>
   );
