@@ -150,3 +150,37 @@ chrome.tabs.onRemoved.addListener(async (tabId) => {
   delete tabStates[tabId];
   await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });
 });
+
+chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+  if (message.action === 'freezeTab') {
+    const { tabId, url, title, favIconUrl } = message;
+
+    setTimeout(async () => {
+      let screenshot;
+      try {
+        screenshot = await chrome.tabs.captureVisibleTab(undefined, { format: 'jpeg', quality: 50 });
+      } catch {}
+
+      const extUrl = chrome.runtime.getURL('');
+      const suspendedUrl = `${extUrl}suspended.html?tabId=${tabId}&url=${encodeURIComponent(url)}`;
+
+      const data = await chrome.storage.local.get(STORAGE_KEYS.TABS);
+      const tabStates = data[STORAGE_KEYS.TABS] || {};
+
+      tabStates[tabId] = {
+        ...tabStates[tabId],
+        url,
+        title,
+        favIconUrl,
+        screenshot: screenshot || tabStates[tabId]?.screenshot,
+        lastActive: Date.now(),
+        isSuspended: true
+      };
+
+      await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });
+      try {
+        await chrome.tabs.update(tabId, { url: suspendedUrl });
+      } catch {}
+    }, 100);
+  }
+});

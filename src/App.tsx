@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, HardDrive, Settings, Power } from 'lucide-react';
+import { Clock, HardDrive, Settings, Power, Zap } from 'lucide-react';
 import { i18n } from './utils/i18n';
 
 export default function App() {
@@ -41,6 +41,22 @@ export default function App() {
     loadStats();
   }, []);
 
+  const handleFreezeCurrent = async () => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id || !tab.url?.startsWith('http')) return;
+
+      window.close();
+      chrome.runtime.sendMessage({
+        action: 'freezeTab',
+        tabId: tab.id,
+        url: tab.url,
+        title: tab.title || '',
+        favIconUrl: tab.favIconUrl
+      });
+    } catch {}
+  };
+
   return (
     <div className="w-72 bg-[#020617] text-slate-100 font-sans">
       <header className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
@@ -76,6 +92,14 @@ export default function App() {
             <div className="text-xs text-slate-500">{i18n('popup_memory')}</div>
           </div>
         </div>
+
+        <button
+          onClick={handleFreezeCurrent}
+          className="w-full bg-[#569ac4] hover:bg-[#4a8ab4] text-white py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2"
+        >
+          <Zap className="w-4 h-4" />
+          {i18n('popup_freeze_now')}
+        </button>
       </div>
     </div>
   );

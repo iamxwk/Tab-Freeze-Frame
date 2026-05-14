@@ -31,6 +31,10 @@
     "message": "Set Timeout",
     "description": "Button to open settings"
   },
+  "popup_freeze_now": {
+    "message": "Freeze Current Tab",
+    "description": "Button to freeze current tab"
+  },
   "settings_title": {
     "message": "Settings",
     "description": "Settings page title"

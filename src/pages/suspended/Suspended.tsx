@@ -76,13 +76,14 @@ export default function SuspendedPage() {
 
         <div
           onClick={handleRestore}
-          className="group relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl cursor-pointer hover:border-blue-500/50 transition-all duration-500"
+          className="group relative w-full rounded-2xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl cursor-pointer hover:border-blue-500/50 transition-all duration-500"
+          style={{ minHeight: '300px' }}
         >
           {state?.screenshot ? (
             <img
               src={state.screenshot}
               alt="Page Snapshot"
-              className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-700"
+              className="w-full h-auto object-contain opacity-70 group-hover:opacity-90 transition-opacity duration-700"
               referrerPolicy="no-referrer"
             />
           ) : (
