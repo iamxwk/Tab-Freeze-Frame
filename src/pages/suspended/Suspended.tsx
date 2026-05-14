@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { MousePointerClick, RefreshCw } from 'lucide-react';
-import { motion } from 'motion/react';
-import { i18n } from '../../utils/i18n';
+import React, {useEffect, useState} from 'react';
+import {MousePointerClick, RefreshCw} from 'lucide-react';
+import {motion} from 'motion/react';
+import {i18n} from '../../utils/i18n';
 
 interface TabState {
   url: string;
@@ -24,7 +24,15 @@ export default function SuspendedPage() {
         const tabStates = data.tab_states || {};
         if (tabId && tabStates[tabId]) {
           setState(tabStates[tabId]);
-          document.title = tabStates[tabId].title;
+          document.title = '* ' + tabStates[tabId].title;
+
+          let link = document.querySelector("link[rel*='icon']");
+          if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+          }
+          link.href = tabStates[tabId].favIconUrl || 'icon.png';
         } else {
           setState({
             url: originalUrl || '',
@@ -55,19 +63,21 @@ export default function SuspendedPage() {
   if (loading) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+    <div
+      className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans">
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none"/>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{opacity: 0, y: 20}}
+        animate={{opacity: 1, y: 0}}
         className="max-w-4xl w-full z-10 flex flex-col items-center"
       >
         <div className="flex items-center gap-3 mb-8">
           {state?.favIconUrl ? (
-            <img src={state.favIconUrl} alt="" className="w-10 h-10 rounded-xl" />
+            <img src={state.favIconUrl} alt="" className="w-10 h-10 rounded-xl"/>
           ) : (
-            <img src="icon.png" alt="" className="w-10 h-10 rounded-xl" />
+            <img src="icon.png" alt="" className="w-10 h-10 rounded-xl"/>
           )}
           <h1 className="text-2xl font-bold tracking-tight text-white">
             {state?.title || i18n('suspended_untitled')}
@@ -77,7 +87,7 @@ export default function SuspendedPage() {
         <div
           onClick={handleRestore}
           className="group relative w-full rounded-2xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl cursor-pointer hover:border-blue-500/50 transition-all duration-500"
-          style={{ minHeight: '300px' }}
+          style={{minHeight: '300px'}}
         >
           {state?.screenshot ? (
             <img
@@ -88,18 +98,19 @@ export default function SuspendedPage() {
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/50">
-               <RefreshCw className="w-12 h-12 text-slate-700 mb-4 animate-spin-slow" />
-               <p className="text-slate-500">{i18n('suspended_snapshot_unavailable')}</p>
+              <RefreshCw className="w-12 h-12 text-slate-700 mb-4 animate-spin-slow"/>
+              <p className="text-slate-500">{i18n('suspended_snapshot_unavailable')}</p>
             </div>
           )}
 
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]">
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]">
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{scale: 1.05}}
+              whileTap={{scale: 0.95}}
               className="bg-white text-slate-950 px-8 py-3 rounded-full font-bold flex items-center gap-2 shadow-xl"
             >
-              <MousePointerClick className="w-5 h-5" />
+              <MousePointerClick className="w-5 h-5"/>
               {i18n('suspended_click_restore')}
             </motion.div>
           </div>
@@ -107,7 +118,7 @@ export default function SuspendedPage() {
           <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 to-transparent p-8 pt-20">
             <div className="flex items-center gap-4">
               {state?.favIconUrl && (
-                <img src={state.favIconUrl} alt="" className="w-6 h-6 rounded" />
+                <img src={state.favIconUrl} alt="" className="w-6 h-6 rounded"/>
               )}
               <div className="flex-1 min-w-0">
                 <h2 className="text-xl font-semibold truncate text-white">{state?.title}</h2>
@@ -119,15 +130,16 @@ export default function SuspendedPage() {
 
         <div className="mt-8 flex items-center gap-6 text-sm text-slate-500">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500"/>
             <span>{i18n('suspended_memory_released')}</span>
           </div>
-          <div className="w-px h-4 bg-slate-800" />
+          <div className="w-px h-4 bg-slate-800"/>
           <span>{i18n('suspended_click_anywhere')}</span>
         </div>
       </motion.div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-700 font-mono tracking-widest uppercase">
+      <div
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-700 font-mono tracking-widest uppercase">
         Suspended to optimize performance
       </div>
     </div>
