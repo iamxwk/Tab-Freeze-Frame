@@ -2,12 +2,12 @@
   "manifest_version": 3,
   "name": "Tab Freeze Frame",
   "default_locale": "en",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Automatically suspend idle tabs and show snapshots to save memory.",
   "icons": {
-    "16": "icon.png",
-    "32": "icon.png",
-    "48": "icon.png",
+    "16": "16.png",
+    "32": "32.png",
+    "48": "48.png",
     "128": "icon.png"
   },
   "permissions": [
@@ -25,8 +25,8 @@
   "action": {
     "default_popup": "index.html",
     "default_icon": {
-      "16": "icon.png",
-      "32": "icon.png"
+      "16": "16.png",
+      "32": "32.png"
     }
   },
   "options_page": "options.html"
