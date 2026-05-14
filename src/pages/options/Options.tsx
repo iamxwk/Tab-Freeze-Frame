@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Save, Clock, ShieldCheck, Info } from 'lucide-react';
+import { Save, Clock, ShieldCheck, Info, Globe } from 'lucide-react';
 import { motion } from 'motion/react';
 import { i18n } from '../../utils/i18n';
 
 export default function OptionsPage() {
   const [timeout, setTimeoutVal] = useState(1);
+  const [whitelist, setWhitelist] = useState('');
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (chrome.storage) {
       chrome.storage.local.get('extension_settings', (data) => {
         if (data.extension_settings) {
-          setTimeoutVal(data.extension_settings.timeoutMinutes);
+          setTimeoutVal(data.extension_settings.timeoutMinutes || 1);
+          setWhitelist(data.extension_settings.whitelist || '');
         }
       });
     }
@@ -20,7 +22,10 @@ export default function OptionsPage() {
   const handleSave = () => {
     if (chrome.storage) {
       chrome.storage.local.set({
-        extension_settings: { timeoutMinutes: timeout }
+        extension_settings: {
+          timeoutMinutes: timeout,
+          whitelist: whitelist
+        }
       }, () => {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
@@ -65,12 +70,30 @@ export default function OptionsPage() {
                 max="120"
                 value={timeout}
                 onChange={(e) => setTimeoutVal(parseInt(e.target.value))}
-                className="flex-1 accent-blue-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer"
+                className="flex-1 accent-[#569ac4] h-1.5 bg-slate-800 rounded-lg cursor-pointer"
               />
-              <div className="w-24 text-center bg-slate-800 px-4 py-2 rounded-xl border border-white/5 font-mono text-blue-400 font-bold">
+              <div className="w-24 text-center bg-slate-800 px-4 py-2 rounded-xl border border-white/5 font-mono text-[#569ac4] font-bold">
                 {timeout} {i18n('settings_minutes')}
               </div>
             </div>
+          </section>
+
+          <section className="bg-slate-900/50 border border-white/5 rounded-3xl p-8 backdrop-blur-sm">
+            <div className="flex items-start gap-4 mb-4">
+              <div className="w-10 h-10 rounded-full bg-[#569ac4]/10 flex items-center justify-center text-[#569ac4]">
+                <Globe className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-white">{i18n('settings_whitelist_title')}</h2>
+                <p className="text-sm text-slate-500">{i18n('settings_whitelist_desc')}</p>
+              </div>
+            </div>
+            <textarea
+              value={whitelist}
+              onChange={(e) => setWhitelist(e.target.value)}
+              placeholder={i18n('settings_whitelist_placeholder')}
+              className="w-full h-32 bg-slate-800 border border-white/5 rounded-xl p-4 text-slate-200 font-mono text-sm resize-none focus:outline-none focus:border-[#569ac4]/50"
+            />
           </section>
 
           <section className="bg-slate-900/50 border border-white/5 rounded-3xl p-8 backdrop-blur-sm">
@@ -84,11 +107,6 @@ export default function OptionsPage() {
               </div>
             </div>
           </section>
-
-          <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-4 flex gap-4 text-sm text-blue-300">
-            <Info className="w-5 h-5 shrink-0" />
-            <p>{i18n('settings_tip')}</p>
-          </div>
 
           <div className="flex items-center justify-between pt-6">
             <p className="text-xs text-slate-600 italic">{i18n('settings_footer')}</p>

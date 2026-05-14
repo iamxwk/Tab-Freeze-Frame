@@ -47,6 +47,18 @@
     "message": "标签页闲置多长时间后自动挂起",
     "description": "Timeout section description"
   },
+  "settings_whitelist_title": {
+    "message": "网址白名单",
+    "description": "Whitelist section title"
+  },
+  "settings_whitelist_desc": {
+    "message": "匹配这些正则表达式的网址将永不被挂起。每行一个正则。",
+    "description": "Whitelist section description"
+  },
+  "settings_whitelist_placeholder": {
+    "message": ".*\\.google\\.com\n.*\\.github\\.com",
+    "description": "Placeholder for whitelist input"
+  },
   "settings_minutes": {
     "message": "分钟",
     "description": "Minutes unit"

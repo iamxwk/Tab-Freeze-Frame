@@ -95,6 +95,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     const tabStates = tabsData[STORAGE_KEYS.TABS] || {};
     const settings = settingsData[STORAGE_KEYS.SETTINGS];
     const timeoutMs = (settings?.timeoutMinutes || DEFAULT_TIMEOUT) * 60 * 1000;
+    const whitelist = settings?.whitelist || '';
     const now = Date.now();
 
     const tabs = await chrome.tabs.query({ active: false });
@@ -103,6 +104,19 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
       if (!tab.id || !tab.url) continue;
       const extUrl = chrome.runtime.getURL('');
       if (tab.url.startsWith('chrome://') || tab.url.startsWith(extUrl)) continue;
+
+      if (whitelist) {
+        const patterns = whitelist.split('\n').filter(p => p.trim());
+        const isWhitelisted = patterns.some(pattern => {
+          try {
+            const regex = new RegExp(pattern.trim());
+            return regex.test(tab.url);
+          } catch {
+            return false;
+          }
+        });
+        if (isWhitelisted) continue;
+      }
 
       const state = tabStates[tab.id];
       const lastActive = state?.lastActive || 0;
@@ -123,7 +137,6 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
         try {
           await chrome.tabs.update(tab.id, { url: suspendedUrl });
         } catch (e) {
-          // Tab may be dragging or otherwise locked
         }
       }
     }

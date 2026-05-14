@@ -47,6 +47,18 @@
     "message": "Automatically suspend tabs after idle time",
     "description": "Timeout section description"
   },
+  "settings_whitelist_title": {
+    "message": "URL Whitelist",
+    "description": "Whitelist section title"
+  },
+  "settings_whitelist_desc": {
+    "message": "URLs matching these patterns will never be suspended. One regex per line.",
+    "description": "Whitelist section description"
+  },
+  "settings_whitelist_placeholder": {
+    "message": ".*\\.google\\.com\n.*\\.github\\.com",
+    "description": "Placeholder for whitelist input"
+  },
   "settings_minutes": {
     "message": "minutes",
     "description": "Minutes unit"
