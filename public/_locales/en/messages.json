@@ -1,0 +1,102 @@
+{
+  "extension_name": {
+    "message": "Tab Freeze Frame",
+    "description": "Extension name"
+  },
+  "popup_suspended": {
+    "message": "Suspended",
+    "description": "Label for suspended tabs count"
+  },
+  "popup_tabs": {
+    "message": "Tabs",
+    "description": "Unit for tabs"
+  },
+  "popup_released": {
+    "message": "Released",
+    "description": "Label for memory released"
+  },
+  "popup_memory": {
+    "message": "MB Memory",
+    "description": "Unit for memory"
+  },
+  "popup_running": {
+    "message": "Running",
+    "description": "Status indicator"
+  },
+  "popup_auto_monitor": {
+    "message": "Auto monitoring idle tabs",
+    "description": "Status description"
+  },
+  "popup_settings": {
+    "message": "Set Timeout",
+    "description": "Button to open settings"
+  },
+  "settings_title": {
+    "message": "Settings",
+    "description": "Settings page title"
+  },
+  "settings_description": {
+    "message": "Manage your Tab Freeze Frame settings",
+    "description": "Settings page description"
+  },
+  "settings_suspend_timeout": {
+    "message": "Suspend Timeout",
+    "description": "Timeout section title"
+  },
+  "settings_timeout_desc": {
+    "message": "Automatically suspend tabs after idle time",
+    "description": "Timeout section description"
+  },
+  "settings_minutes": {
+    "message": "minutes",
+    "description": "Minutes unit"
+  },
+  "settings_privacy_title": {
+    "message": "Privacy & Security",
+    "description": "Privacy section title"
+  },
+  "settings_privacy_desc": {
+    "message": "All screenshots and data are stored locally and never uploaded to any server.",
+    "description": "Privacy description"
+  },
+  "settings_tip": {
+    "message": "Tip: You can click the link at the bottom left of the snapshot to copy the original URL.",
+    "description": "Help tip"
+  },
+  "settings_footer": {
+    "message": "Version 1.0.0 • Powered by xwk",
+    "description": "Footer text"
+  },
+  "settings_saved": {
+    "message": "Saved!",
+    "description": "Save confirmation"
+  },
+  "settings_save": {
+    "message": "Save Changes",
+    "description": "Save button"
+  },
+  "suspended_untitled": {
+    "message": "Untitled Tab",
+    "description": "Default title for unknown tabs"
+  },
+  "suspended_snapshot_unavailable": {
+    "message": "Snapshot unavailable",
+    "description": "When screenshot fails"
+  },
+  "suspended_click_restore": {
+    "message": "Click to Restore",
+    "description": "Restore button text"
+  },
+  "suspended_memory_released": {
+    "message": "Memory Released",
+    "description": "Status indicator"
+  },
+  "suspended_click_anywhere": {
+    "message": "Click anywhere to restore",
+    "description": "Help text"
+  },
+  "suspended_demo_title": {
+    "message": "GitHub Trending - Demo Page",
+    "description": "Demo mode title"
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "Tab Snap - 智能标签页内存释放器",
+  "name": "Tab Freeze Frame - 智能标签页内存释放器",
   "description": "自动挂起长时间未操作的标签页以释放内存，并显示最后状态截图，点击即可恢复。",
   "requestFramePermissions": [],
   "majorCapabilities": []

@@ -1,0 +1,102 @@
+{
+  "extension_name": {
+    "message": "Tab Freeze Frame",
+    "description": "Extension name"
+  },
+  "popup_suspended": {
+    "message": "已挂起",
+    "description": "Label for suspended tabs count"
+  },
+  "popup_tabs": {
+    "message": "标签页",
+    "description": "Unit for tabs"
+  },
+  "popup_released": {
+    "message": "已释放",
+    "description": "Label for memory released"
+  },
+  "popup_memory": {
+    "message": "MB 内存",
+    "description": "Unit for memory"
+  },
+  "popup_running": {
+    "message": "运行中",
+    "description": "Status indicator"
+  },
+  "popup_auto_monitor": {
+    "message": "自动监测闲置标签",
+    "description": "Status description"
+  },
+  "popup_settings": {
+    "message": "设置超时时间",
+    "description": "Button to open settings"
+  },
+  "settings_title": {
+    "message": "设置",
+    "description": "Settings page title"
+  },
+  "settings_description": {
+    "message": "管理您的 Tab Freeze Frame 配置",
+    "description": "Settings page description"
+  },
+  "settings_suspend_timeout": {
+    "message": "挂起超时",
+    "description": "Timeout section title"
+  },
+  "settings_timeout_desc": {
+    "message": "标签页闲置多长时间后自动挂起",
+    "description": "Timeout section description"
+  },
+  "settings_minutes": {
+    "message": "分钟",
+    "description": "Minutes unit"
+  },
+  "settings_privacy_title": {
+    "message": "隐私与安全",
+    "description": "Privacy section title"
+  },
+  "settings_privacy_desc": {
+    "message": "所有截图和数据均存储在本地，不会上传到任何服务器。",
+    "description": "Privacy description"
+  },
+  "settings_tip": {
+    "message": "提示：你可以点击快照左下角的链接直接复制原始 URL。",
+    "description": "Help tip"
+  },
+  "settings_footer": {
+    "message": "版本 1.0.0 • 由 xwk 强力驱动",
+    "description": "Footer text"
+  },
+  "settings_saved": {
+    "message": "已保存！",
+    "description": "Save confirmation"
+  },
+  "settings_save": {
+    "message": "保存更改",
+    "description": "Save button"
+  },
+  "suspended_untitled": {
+    "message": "未命名的标签页",
+    "description": "Default title for unknown tabs"
+  },
+  "suspended_snapshot_unavailable": {
+    "message": "快照不可用",
+    "description": "When screenshot fails"
+  },
+  "suspended_click_restore": {
+    "message": "点击恢复页面",
+    "description": "Restore button text"
+  },
+  "suspended_memory_released": {
+    "message": "内存已释放",
+    "description": "Status indicator"
+  },
+  "suspended_click_anywhere": {
+    "message": "点击任意位置恢复",
+    "description": "Help text"
+  },
+  "suspended_demo_title": {
+    "message": "GitHub Trending - 示例页面",
+    "description": "Demo mode title"
+  }
+}

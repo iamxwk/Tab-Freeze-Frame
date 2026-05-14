@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Tab Freeze Frame - 智能标签页内存释放器",
+  "name": "Tab Freeze Frame",
+  "default_locale": "en",
   "version": "1.0.0",
-  "description": "自动挂起闲置标签页并显示快照，节省内存。",
+  "description": "Automatically suspend idle tabs and show snapshots to save memory.",
   "icons": {
     "16": "icon.png",
     "32": "icon.png",
