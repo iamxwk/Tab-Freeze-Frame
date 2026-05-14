@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Freeze Frame - 智能标签页内存释放器",
+  "version": "1.0.0",
+  "description": "自动挂起闲置标签页并显示快照，节省内存。",
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "icon.png",
+      "32": "icon.png"
+    }
+  },
+  "options_page": "options.html"
+}
