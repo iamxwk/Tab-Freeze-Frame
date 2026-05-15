@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Save, Clock, ShieldCheck, Info, Globe, List, LayoutList, Timer } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { Save, Clock, ShieldCheck, Info, Globe, List, LayoutList, Timer, ChevronDown } from 'lucide-react';
 import { motion } from 'motion/react';
 import { i18n } from '../../utils/i18n';
 
@@ -20,6 +20,9 @@ export default function OptionsPage() {
   const [tabStates, setTabStates] = useState<Record<number, TabState>>({});
   const [freezeCountdowns, setFreezeCountdowns] = useState<Record<number, number>>({});
   const [hoveredTab, setHoveredTab] = useState<{ tabId: number; state: TabState; x: number; y: number } | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [savedTimeout, setSavedTimeout] = useState(1);
+  const initialValues = useRef({ timeout: 1, whitelist: '' });
 
   const loadTabStates = () => {
     if (chrome.storage) {
@@ -36,7 +39,12 @@ export default function OptionsPage() {
       chrome.storage.local.get('extension_settings', (data) => {
         if (data.extension_settings) {
           setTimeoutVal(data.extension_settings.timeoutMinutes || 1);
+          setSavedTimeout(data.extension_settings.timeoutMinutes || 1);
           setWhitelist(data.extension_settings.whitelist || '');
+          initialValues.current = {
+            timeout: data.extension_settings.timeoutMinutes || 1,
+            whitelist: data.extension_settings.whitelist || ''
+          };
         }
       });
     }
@@ -51,13 +59,14 @@ export default function OptionsPage() {
   useEffect(() => {
     const updateCountdowns = () => {
       const newCountdowns: Record<number, number> = {};
+      const activeTimeout = hasUnsavedChanges ? savedTimeout : timeout;
       Object.entries(tabStates).forEach(([tabId, state]) => {
         if (state.isSuspended) {
           newCountdowns[parseInt(tabId)] = 0;
           return;
         }
         const elapsed = Date.now() - state.lastActive;
-        const timeoutMs = timeout * 60 * 1000;
+        const timeoutMs = activeTimeout * 60 * 1000;
         const remaining = Math.max(0, timeoutMs - elapsed);
         newCountdowns[parseInt(tabId)] = remaining;
       });
@@ -67,7 +76,7 @@ export default function OptionsPage() {
     updateCountdowns();
     const interval = setInterval(updateCountdowns, 1000);
     return () => clearInterval(interval);
-  }, [tabStates, timeout]);
+  }, [tabStates, timeout, savedTimeout]);
 
   const handleSave = () => {
     if (chrome.storage) {
@@ -78,11 +87,16 @@ export default function OptionsPage() {
         }
       }, () => {
         setSaved(true);
+        setHasUnsavedChanges(false);
+        setSavedTimeout(timeout);
+        initialValues.current = { timeout, whitelist };
         setTimeout(() => setSaved(false), 2000);
         chrome.runtime.sendMessage({ action: 'settingsChanged' });
       });
     } else {
       setSaved(true);
+      setHasUnsavedChanges(false);
+      initialValues.current = { timeout, whitelist };
       setTimeout(() => setSaved(false), 2000);
     }
   };
@@ -140,7 +154,10 @@ export default function OptionsPage() {
                 min="1"
                 max="120"
                 value={timeout}
-                onChange={(e) => setTimeoutVal(parseInt(e.target.value))}
+                onChange={(e) => {
+                setTimeoutVal(parseInt(e.target.value));
+                setHasUnsavedChanges(true);
+              }}
                 className="flex-1 accent-[#569ac4] h-1.5 bg-slate-800 rounded-lg cursor-pointer"
               />
               <div className="w-24 text-center bg-slate-800 px-4 py-2 rounded-xl border border-white/5 font-mono text-[#569ac4] font-bold">
@@ -161,7 +178,10 @@ export default function OptionsPage() {
             </div>
             <textarea
               value={whitelist}
-              onChange={(e) => setWhitelist(e.target.value)}
+              onChange={(e) => {
+                setWhitelist(e.target.value);
+                setHasUnsavedChanges(true);
+              }}
               placeholder={i18n('settings_whitelist_placeholder')}
               className="w-full h-32 bg-slate-800 border border-white/5 rounded-xl p-4 text-slate-200 font-mono text-sm resize-none focus:outline-none focus:border-[#569ac4]/50"
             />
@@ -270,6 +290,22 @@ export default function OptionsPage() {
             className="w-64 rounded-lg border border-white/10 shadow-2xl"
           />
         </div>
+      )}
+      {hasUnsavedChanges && (
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="fixed right-8 bottom-28 z-[100] flex items-center gap-2 cursor-pointer"
+          onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
+        >
+          <span className="text-amber-400 text-sm font-medium whitespace-nowrap">{i18n('settings_click_to_save')}</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <ChevronDown className="w-5 h-5 text-amber-400" />
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );

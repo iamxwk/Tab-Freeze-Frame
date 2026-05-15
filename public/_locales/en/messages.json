@@ -56,11 +56,11 @@
     "description": "Whitelist section title"
   },
   "settings_whitelist_desc": {
-    "message": "URLs matching these patterns will never be suspended. One regex per line.",
+    "message": "URLs matching these patterns will never be suspended. Use * as wildcard. One per line.",
     "description": "Whitelist section description"
   },
   "settings_whitelist_placeholder": {
-    "message": ".*\\.google\\.com\n.*\\.github\\.com",
+    "message": "*.google.com\n*.github.com",
     "description": "Placeholder for whitelist input"
   },
   "settings_minutes": {
@@ -146,5 +146,9 @@
   "tab_states_untitled": {
     "message": "Untitled",
     "description": "Default title for unknown tabs"
+  },
+  "settings_click_to_save": {
+    "message": "Click save button",
+    "description": "Hint to save settings"
   }
 }

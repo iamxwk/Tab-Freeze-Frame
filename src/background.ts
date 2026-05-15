@@ -53,6 +53,12 @@ async function scheduleNextCheck() {
   }
 }
 
+function wildcardToRegex(pattern: string): string {
+  const escaped = pattern
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&');
+  return escaped.replace(/\*/g, '.*');
+}
+
 async function checkAndFreezeTabs() {
   const [tabsData, settingsData] = await Promise.all([
     chrome.storage.local.get(STORAGE_KEYS.TABS),
@@ -75,7 +81,7 @@ async function checkAndFreezeTabs() {
       const patterns = whitelist.split('\n').filter(p => p.trim());
       const isWhitelisted = patterns.some(pattern => {
         try {
-          const regex = new RegExp(pattern.trim());
+          const regex = new RegExp(wildcardToRegex(pattern.trim()));
           return regex.test(tab.url);
         } catch {
           return false;

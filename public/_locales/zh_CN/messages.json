@@ -56,11 +56,11 @@
     "description": "Whitelist section title"
   },
   "settings_whitelist_desc": {
-    "message": "匹配这些正则表达式的网址将永不被挂起。每行一个正则。",
+    "message": "匹配这些模式的网址将永不被挂起。使用 * 作为通配符，每行一个。",
     "description": "Whitelist section description"
   },
   "settings_whitelist_placeholder": {
-    "message": ".*\\.google\\.com\n.*\\.github\\.com",
+    "message": "*.google.com\n*.github.com",
     "description": "Placeholder for whitelist input"
   },
   "settings_minutes": {
@@ -146,5 +146,9 @@
   "tab_states_untitled": {
     "message": "未命名",
     "description": "Default title for unknown tabs"
+  },
+  "settings_click_to_save": {
+    "message": "点击保存按钮",
+    "description": "Hint to save settings"
   }
 }
