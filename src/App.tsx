@@ -7,8 +7,13 @@ export default function App() {
     suspendedCount: 0,
     memorySaved: 0,
   });
+  const [version, setVersion] = useState('');
 
   useEffect(() => {
+    if (chrome.runtime?.getManifest()) {
+      setVersion(chrome.runtime.getManifest().version || '');
+    }
+
     async function loadStats() {
       try {
         const tabs = await chrome.tabs.query({});
@@ -65,6 +70,7 @@ export default function App() {
         <div className="flex items-center gap-2">
           <img src="icon.png" alt="" className="w-8 h-8 rounded-lg" />
           <span className="font-bold">{i18n('extension_name')}</span>
+          <span className="text-xs text-slate-500 ml-1">v{version}</span>
         </div>
         <button
           onClick={() => window.open('options.html', '_blank')}
@@ -97,7 +103,7 @@ export default function App() {
 
         <button
           onClick={handleFreezeCurrent}
-          className="w-full bg-[#569ac4] hover:bg-[#4a8ab4] text-white py-2.5 rounded-lg font-medium text-sm transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-[#569ac4] hover:bg-[#4a8ab4] hover:scale-105 active:scale-95 text-white py-2.5 rounded-2xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 shadow-xl shadow-[#569ac4]/20"
         >
           <Zap className="w-4 h-4" />
           {i18n('popup_freeze_now')}

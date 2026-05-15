@@ -21,6 +21,16 @@ export default function OptionsPage() {
   const [freezeCountdowns, setFreezeCountdowns] = useState<Record<number, number>>({});
   const [hoveredTab, setHoveredTab] = useState<{ tabId: number; state: TabState; x: number; y: number } | null>(null);
 
+  const loadTabStates = () => {
+    if (chrome.storage) {
+      chrome.storage.local.get('tab_states', (data) => {
+        if (data.tab_states) {
+          setTabStates(data.tab_states);
+        }
+      });
+    }
+  };
+
   useEffect(() => {
     if (chrome.storage) {
       chrome.storage.local.get('extension_settings', (data) => {
@@ -29,21 +39,23 @@ export default function OptionsPage() {
           setWhitelist(data.extension_settings.whitelist || '');
         }
       });
-      chrome.storage.local.get('tab_states', (data) => {
-        if (data.tab_states) {
-          setTabStates(data.tab_states);
-        }
-      });
     }
     if (chrome.runtime?.getManifest()) {
       setVersion(chrome.runtime.getManifest().version || '');
     }
+    loadTabStates();
+    const refreshInterval = setInterval(loadTabStates, 3000);
+    return () => clearInterval(refreshInterval);
   }, []);
 
   useEffect(() => {
     const updateCountdowns = () => {
       const newCountdowns: Record<number, number> = {};
       Object.entries(tabStates).forEach(([tabId, state]) => {
+        if (state.isSuspended) {
+          newCountdowns[parseInt(tabId)] = 0;
+          return;
+        }
         const elapsed = Date.now() - state.lastActive;
         const timeoutMs = timeout * 60 * 1000;
         const remaining = Math.max(0, timeoutMs - elapsed);
