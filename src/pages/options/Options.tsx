@@ -79,6 +79,7 @@ export default function OptionsPage() {
       }, () => {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
+        chrome.runtime.sendMessage({ action: 'settingsChanged' });
       });
     } else {
       setSaved(true);

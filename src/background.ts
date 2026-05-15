@@ -46,7 +46,67 @@ async function scheduleNextCheck() {
     }
   }
 
-  chrome.alarms.create('check_idle_tabs', { when: nextCheckTime });
+  if (nextCheckTime <= now) {
+    checkAndFreezeTabs();
+  } else {
+    chrome.alarms.create('check_idle_tabs', { when: nextCheckTime });
+  }
+}
+
+async function checkAndFreezeTabs() {
+  const [tabsData, settingsData] = await Promise.all([
+    chrome.storage.local.get(STORAGE_KEYS.TABS),
+    chrome.storage.local.get(STORAGE_KEYS.SETTINGS)
+  ]);
+  const tabStates = tabsData[STORAGE_KEYS.TABS] || {};
+  const settings = settingsData[STORAGE_KEYS.SETTINGS];
+  const timeoutMs = (settings?.timeoutMinutes || DEFAULT_TIMEOUT) * 60 * 1000;
+  const whitelist = settings?.whitelist || '';
+  const now = Date.now();
+
+  const tabs = await chrome.tabs.query({ active: false });
+
+  for (const tab of tabs) {
+    if (!tab.id || !tab.url) continue;
+    const extUrl = chrome.runtime.getURL('');
+    if (tab.url.startsWith('chrome://') || tab.url.startsWith(extUrl)) continue;
+
+    if (whitelist) {
+      const patterns = whitelist.split('\n').filter(p => p.trim());
+      const isWhitelisted = patterns.some(pattern => {
+        try {
+          const regex = new RegExp(pattern.trim());
+          return regex.test(tab.url);
+        } catch {
+          return false;
+        }
+      });
+      if (isWhitelisted) continue;
+    }
+
+    const state = tabStates[tab.id];
+    const lastActive = state?.lastActive || 0;
+
+    if (lastActive > 0 && (now - lastActive) > timeoutMs) {
+      const suspendedUrl = `${extUrl}suspended.html?tabId=${tab.id}&url=${encodeURIComponent(tab.url)}`;
+
+      tabStates[tab.id] = {
+        ...state,
+        url: tab.url,
+        title: tab.title || '',
+        favIconUrl: tab.favIconUrl,
+        lastActive: now,
+        isSuspended: true
+      };
+
+      await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });
+      try {
+        await chrome.tabs.update(tab.id, { url: suspendedUrl });
+      } catch (e) {
+      }
+    }
+  }
+  scheduleNextCheck();
 }
 
 const captureActiveTab = async () => {
@@ -120,59 +180,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === 'check_idle_tabs') {
-    const [tabsData, settingsData] = await Promise.all([
-      chrome.storage.local.get(STORAGE_KEYS.TABS),
-      chrome.storage.local.get(STORAGE_KEYS.SETTINGS)
-    ]);
-    const tabStates = tabsData[STORAGE_KEYS.TABS] || {};
-    const settings = settingsData[STORAGE_KEYS.SETTINGS];
-    const timeoutMs = (settings?.timeoutMinutes || DEFAULT_TIMEOUT) * 60 * 1000;
-    const whitelist = settings?.whitelist || '';
-    const now = Date.now();
-
-    const tabs = await chrome.tabs.query({ active: false });
-
-    for (const tab of tabs) {
-      if (!tab.id || !tab.url) continue;
-      const extUrl = chrome.runtime.getURL('');
-      if (tab.url.startsWith('chrome://') || tab.url.startsWith(extUrl)) continue;
-
-      if (whitelist) {
-        const patterns = whitelist.split('\n').filter(p => p.trim());
-        const isWhitelisted = patterns.some(pattern => {
-          try {
-            const regex = new RegExp(pattern.trim());
-            return regex.test(tab.url);
-          } catch {
-            return false;
-          }
-        });
-        if (isWhitelisted) continue;
-      }
-
-      const state = tabStates[tab.id];
-      const lastActive = state?.lastActive || 0;
-
-      if (lastActive > 0 && (now - lastActive) > timeoutMs) {
-        const suspendedUrl = `${extUrl}suspended.html?tabId=${tab.id}&url=${encodeURIComponent(tab.url)}`;
-
-        tabStates[tab.id] = {
-          ...state,
-          url: tab.url,
-          title: tab.title || '',
-          favIconUrl: tab.favIconUrl,
-          lastActive: now,
-          isSuspended: true
-        };
-
-        await chrome.storage.local.set({ [STORAGE_KEYS.TABS]: tabStates });
-        try {
-          await chrome.tabs.update(tab.id, { url: suspendedUrl });
-        } catch (e) {
-        }
-      }
-    }
-    scheduleNextCheck();
+    checkAndFreezeTabs();
   }
 });
 
@@ -229,5 +237,11 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
         await chrome.tabs.update(tabId, { url: suspendedUrl });
       } catch {}
     }, 100);
+  }
+});
+
+chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
+  if (message.action === 'settingsChanged') {
+    scheduleNextCheck();
   }
 });
