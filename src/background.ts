@@ -109,12 +109,20 @@ async function checkAndFreezeTabs() {
   scheduleNextCheck();
 }
 
+async function captureTabScreenshot(): Promise<string | null> {
+  try {
+    return await chrome.tabs.captureVisibleTab(undefined, { format: 'jpeg', quality: 40 });
+  } catch {
+    return null;
+  }
+}
+
 const captureActiveTab = async () => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id || !tab.url?.startsWith('http')) return;
 
-    const screenshot = await chrome.tabs.captureVisibleTab(undefined, { format: 'jpeg', quality: 50 });
+    const screenshot = await captureTabScreenshot();
 
     const data = await chrome.storage.local.get(STORAGE_KEYS.TABS);
     const tabStates = data[STORAGE_KEYS.TABS] || {};
@@ -210,11 +218,8 @@ chrome.runtime.onMessage.addListener((message, _sender, _sendResponse) => {
   if (message.action === 'freezeTab') {
     const { tabId, url, title, favIconUrl } = message;
 
-    setTimeout(async () => {
-      let screenshot;
-      try {
-        screenshot = await chrome.tabs.captureVisibleTab(undefined, { format: 'jpeg', quality: 50 });
-      } catch {}
+setTimeout(async () => {
+      const screenshot = await captureTabScreenshot();
 
       const extUrl = chrome.runtime.getURL('');
       const suspendedUrl = `${extUrl}suspended.html?tabId=${tabId}&url=${encodeURIComponent(url)}`;
