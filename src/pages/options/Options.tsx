@@ -23,6 +23,8 @@ export default function OptionsPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [savedTimeout, setSavedTimeout] = useState(1);
   const initialValues = useRef({ timeout: 1, whitelist: '' });
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
 
   const loadTabStates = () => {
     if (chrome.storage) {
@@ -55,6 +57,20 @@ export default function OptionsPage() {
     const refreshInterval = setInterval(loadTabStates, 3000);
     return () => clearInterval(refreshInterval);
   }, []);
+
+  useEffect(() => {
+    const updatePos = () => {
+      if (saveButtonRef.current) {
+        const rect = saveButtonRef.current.getBoundingClientRect();
+        setTooltipPos({ x: rect.left, y: rect.top });
+      }
+    };
+    if (hasUnsavedChanges) {
+      updatePos();
+      window.addEventListener('scroll', updatePos);
+      return () => window.removeEventListener('scroll', updatePos);
+    }
+  }, [hasUnsavedChanges]);
 
   useEffect(() => {
     const updateCountdowns = () => {
@@ -267,6 +283,7 @@ export default function OptionsPage() {
           <div className="flex items-center justify-between pt-6">
             <p className="text-xs text-slate-600 italic">Version {version} • Powered by xwk<br/>Email: <a href="mailto:2380567@gmail.com?subject=About Tab Freeze Frame">2380567@gmail.com</a></p>
             <button
+              ref={saveButtonRef}
               onClick={handleSave}
               className={`
                 flex items-center gap-2 px-8 py-3 rounded-2xl font-bold transition-all duration-300
@@ -293,9 +310,10 @@ export default function OptionsPage() {
       )}
       {hasUnsavedChanges && (
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="fixed right-8 bottom-28 z-[100] flex items-center gap-2 cursor-pointer"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed z-[100] flex flex-col items-center gap-1 cursor-pointer"
+          style={{ left: tooltipPos.x, bottom: 80 }}
           onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
         >
           <span className="text-amber-400 text-sm font-medium whitespace-nowrap">{i18n('settings_click_to_save')}</span>
