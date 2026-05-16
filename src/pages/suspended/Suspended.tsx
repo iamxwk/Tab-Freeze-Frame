@@ -98,7 +98,7 @@ export default function SuspendedPage() {
             />
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/50">
-              <RefreshCw className="w-12 h-12 text-slate-700 mb-4 animate-spin-slow"/>
+              <RefreshCw className="w-12 h-12 text-slate-700 mt-8 mb-4 animate-spin-slow"/>
               <p className="text-slate-500">{i18n('suspended_snapshot_unavailable')}</p>
             </div>
           )}
