@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Tab Freeze Frame",
+  "name": "__MSG_extension_name__",
   "default_locale": "en",
-  "version": "1.0.40",
-  "description": "Automatically suspend idle tabs and show snapshots to save memory.",
+  "version": "1.0.43",
+  "description": "__MSG_extension_description__",
   "icons": {
     "16": "16.png",
     "32": "32.png",

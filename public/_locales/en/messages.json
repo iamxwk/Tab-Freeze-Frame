@@ -3,6 +3,10 @@
     "message": "Tab Freeze Frame",
     "description": "Extension name"
   },
+  "extension_description": {
+    "message": "Automatically suspend idle tabs and show snapshots to save memory.",
+    "description": "Extension description"
+  },
   "popup_suspended": {
     "message": "Suspended",
     "description": "Label for suspended tabs count"

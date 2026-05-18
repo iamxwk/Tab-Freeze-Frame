@@ -37,6 +37,7 @@ export default function OptionsPage() {
   };
 
   useEffect(() => {
+    document.title = i18n('settings_title');
     if (chrome.storage) {
       chrome.storage.local.get('extension_settings', (data) => {
         if (data.extension_settings) {

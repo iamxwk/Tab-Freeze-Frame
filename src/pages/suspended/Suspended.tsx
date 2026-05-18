@@ -140,7 +140,7 @@ export default function SuspendedPage() {
 
       <div
         className="absolute bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-slate-700 font-mono tracking-widest uppercase">
-        Suspended to optimize performance
+Tab Freeze Frame
       </div>
     </div>
   );

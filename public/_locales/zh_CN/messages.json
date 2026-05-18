@@ -3,6 +3,10 @@
     "message": "Tab Freeze Frame",
     "description": "Extension name"
   },
+  "extension_description": {
+    "message": "自动挂起长时间未操作的标签页以释放内存，并显示最后状态截图，点击即可恢复。",
+    "description": "Extension description"
+  },
   "popup_suspended": {
     "message": "已挂起",
     "description": "Label for suspended tabs count"
