@@ -86,7 +86,7 @@ export default function SuspendedPage() {
                 referrerPolicy="no-referrer"
               />
               <div
-                className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]">
+                className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px] cursor-pointer">
                 <motion.div
                   whileHover={{scale: 1.05}}
                   whileTap={{scale: 0.95}}
