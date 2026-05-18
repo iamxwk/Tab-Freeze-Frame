@@ -71,49 +71,38 @@ export default function SuspendedPage() {
       <motion.div
         initial={{opacity: 0, y: 20}}
         animate={{opacity: 1, y: 0}}
-        className="max-w-4xl w-full z-10 flex flex-col items-center"
+        className="w-[80vw] h-[calc(100vh-140px)] z-10 flex flex-col items-stretch"
       >
-        <div className="flex items-center gap-3 mb-8">
-          {state?.favIconUrl ? (
-            <img src={state.favIconUrl} alt="" className="w-10 h-10 rounded-xl"/>
-          ) : (
-            <img src="icon.png" alt="" className="w-10 h-10 rounded-xl"/>
-          )}
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            {state?.title || i18n('suspended_untitled')}
-          </h1>
-        </div>
-
-        <div
+<div
           onClick={handleRestore}
-          className="group relative w-full rounded-2xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl cursor-pointer hover:border-blue-500/50 transition-all duration-500"
-          style={{minHeight: '300px'}}
+          className="group relative w-full h-full mx-auto rounded-2xl overflow-hidden bg-slate-900 border border-white/10 shadow-2xl cursor-pointer hover:border-blue-500/50 transition-all duration-500"
         >
           {state?.screenshot ? (
-            <img
-              src={state.screenshot}
-              alt="Page Snapshot"
-              className="w-full h-auto object-contain opacity-70 group-hover:opacity-90 transition-opacity duration-700"
-              referrerPolicy="no-referrer"
-            />
+            <div className="relative w-full h-full">
+              <img
+                src={state.screenshot}
+                alt="Page Snapshot"
+                className="w-full h-full object-cover object-top opacity-70 group-hover:opacity-90 transition-opacity duration-700"
+                referrerPolicy="no-referrer"
+              />
+              <div
+                className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]">
+                <motion.div
+                  whileHover={{scale: 1.05}}
+                  whileTap={{scale: 0.95}}
+                  className="bg-white text-slate-950 px-8 py-3 rounded-full font-bold flex items-center gap-2 shadow-xl"
+                >
+                  <MousePointerClick className="w-5 h-5"/>
+                  {i18n('suspended_click_restore')}
+                </motion.div>
+              </div>
+            </div>
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900/50">
               <RefreshCw className="w-12 h-12 text-slate-700 mt-8 mb-4 animate-spin-slow"/>
               <p className="text-slate-500">{i18n('suspended_snapshot_unavailable')}</p>
             </div>
           )}
-
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]">
-            <motion.div
-              whileHover={{scale: 1.05}}
-              whileTap={{scale: 0.95}}
-              className="bg-white text-slate-950 px-8 py-3 rounded-full font-bold flex items-center gap-2 shadow-xl"
-            >
-              <MousePointerClick className="w-5 h-5"/>
-              {i18n('suspended_click_restore')}
-            </motion.div>
-          </div>
 
           <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 to-transparent p-8 pt-20">
             <div className="flex items-center gap-4">
@@ -126,15 +115,6 @@ export default function SuspendedPage() {
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="mt-8 flex items-center gap-6 text-sm text-slate-500">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500"/>
-            <span>{i18n('suspended_memory_released')}</span>
-          </div>
-          <div className="w-px h-4 bg-slate-800"/>
-          <span>{i18n('suspended_click_anywhere')}</span>
         </div>
       </motion.div>
 
