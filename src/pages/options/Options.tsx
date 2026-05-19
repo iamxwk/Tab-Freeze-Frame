@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Save, Clock, ShieldCheck, Info, Globe, List, LayoutList, Timer, ChevronDown, Cog } from 'lucide-react';
+import { Save, Clock, ShieldCheck, Info, Globe, List, LayoutList, Timer, ChevronDown, Cog, MousePointerClick } from 'lucide-react';
 import { motion } from 'motion/react';
 import { i18n } from '../../utils/i18n';
 
@@ -27,6 +27,25 @@ export default function OptionsPage() {
   const initialValues = useRef({ timeout: 1, whitelist: '', allowFreezePinned: false, allowFreezeMediaPlaying: false });
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const saveButtonRef = useRef<HTMLButtonElement>(null);
+  const [isIdle, setIsIdle] = useState(false);
+  const isIdleRef = useRef(false);
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const resetIdleTimer = () => {
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+    }
+    idleTimerRef.current = setTimeout(() => {
+      setIsIdle(true);
+      isIdleRef.current = true;
+    }, 5 * 60 * 1000);
+  };
+
+  const wakeUp = () => {
+    setIsIdle(false);
+    isIdleRef.current = false;
+    resetIdleTimer();
+  };
 
   const loadTabStates = () => {
     if (chrome.storage) {
@@ -61,12 +80,40 @@ export default function OptionsPage() {
       setVersion(chrome.runtime.getManifest().version || '');
     }
     loadTabStates();
-    const refreshInterval = setInterval(loadTabStates, 3000);
-    return () => clearInterval(refreshInterval);
+    resetIdleTimer();
+
+    const refreshInterval = setInterval(() => {
+      if (!isIdleRef.current) {
+        loadTabStates();
+      }
+    }, 3000);
+
+    const handleActivity = () => {
+      if (!isIdleRef.current) {
+        resetIdleTimer();
+      }
+    };
+
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+    window.addEventListener('click', handleActivity);
+    window.addEventListener('scroll', handleActivity);
+
+    return () => {
+      clearInterval(refreshInterval);
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+      window.removeEventListener('click', handleActivity);
+      window.removeEventListener('scroll', handleActivity);
+    };
   }, []);
 
   useEffect(() => {
     const updateCountdowns = () => {
+      if (isIdleRef.current) return;
       const newCountdowns: Record<number, number> = {};
       const activeTimeout = hasUnsavedChanges ? savedTimeout : timeout;
       Object.entries(tabStates).forEach(([tabId, state]) => {
@@ -376,6 +423,24 @@ export default function OptionsPage() {
           >
             <ChevronDown className="w-5 h-5 text-amber-400" />
           </motion.div>
+        </motion.div>
+      )}
+      {isIdle && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-sm"
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-500/10 via-slate-950/50 to-slate-950/90" />
+          <motion.button
+            onClick={wakeUp}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative z-10 bg-white text-slate-950 px-8 py-4 rounded-full font-bold flex items-center gap-3 shadow-2xl shadow-blue-500/30 cursor-pointer"
+          >
+            <MousePointerClick className="w-6 h-6" />
+            <span>{i18n('suspended_click_restore')}</span>
+          </motion.button>
         </motion.div>
       )}
     </div>
