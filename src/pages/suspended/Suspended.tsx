@@ -82,7 +82,7 @@ export default function SuspendedPage() {
               <img
                 src={state.screenshot}
                 alt="Page Snapshot"
-                className="w-full h-full object-cover object-top opacity-70 group-hover:opacity-90 transition-opacity duration-700"
+                className="w-full h-auto object-contain opacity-70 group-hover:opacity-90 transition-opacity duration-700"
                 referrerPolicy="no-referrer"
               />
               <div
