@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Save, Clock, ShieldCheck, Info, Globe, List, LayoutList, Timer, ChevronDown } from 'lucide-react';
+import { Save, Clock, ShieldCheck, Info, Globe, List, LayoutList, Timer, ChevronDown, Cog } from 'lucide-react';
 import { motion } from 'motion/react';
 import { i18n } from '../../utils/i18n';
 
@@ -15,6 +15,8 @@ interface TabState {
 export default function OptionsPage() {
   const [timeout, setTimeoutVal] = useState(1);
   const [whitelist, setWhitelist] = useState('');
+  const [allowFreezePinned, setAllowFreezePinned] = useState(false);
+  const [allowFreezeMediaPlaying, setAllowFreezeMediaPlaying] = useState(false);
   const [saved, setSaved] = useState(false);
   const [version, setVersion] = useState('');
   const [tabStates, setTabStates] = useState<Record<number, TabState>>({});
@@ -22,7 +24,7 @@ export default function OptionsPage() {
   const [hoveredTab, setHoveredTab] = useState<{ tabId: number; state: TabState; x: number; y: number } | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [savedTimeout, setSavedTimeout] = useState(1);
-  const initialValues = useRef({ timeout: 1, whitelist: '' });
+  const initialValues = useRef({ timeout: 1, whitelist: '', allowFreezePinned: false, allowFreezeMediaPlaying: false });
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const saveButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -44,9 +46,13 @@ export default function OptionsPage() {
           setTimeoutVal(data.extension_settings.timeoutMinutes || 1);
           setSavedTimeout(data.extension_settings.timeoutMinutes || 1);
           setWhitelist(data.extension_settings.whitelist || '');
+          setAllowFreezePinned(data.extension_settings.allowFreezePinned ?? false);
+          setAllowFreezeMediaPlaying(data.extension_settings.allowFreezeMediaPlaying ?? false);
           initialValues.current = {
             timeout: data.extension_settings.timeoutMinutes || 1,
-            whitelist: data.extension_settings.whitelist || ''
+            whitelist: data.extension_settings.whitelist || '',
+            allowFreezePinned: data.extension_settings.allowFreezePinned ?? false,
+            allowFreezeMediaPlaying: data.extension_settings.allowFreezeMediaPlaying ?? false
           };
         }
       });
@@ -58,20 +64,6 @@ export default function OptionsPage() {
     const refreshInterval = setInterval(loadTabStates, 3000);
     return () => clearInterval(refreshInterval);
   }, []);
-
-  useEffect(() => {
-    const updatePos = () => {
-      if (saveButtonRef.current) {
-        const rect = saveButtonRef.current.getBoundingClientRect();
-        setTooltipPos({ x: rect.left, y: rect.top });
-      }
-    };
-    if (hasUnsavedChanges) {
-      updatePos();
-      window.addEventListener('scroll', updatePos);
-      return () => window.removeEventListener('scroll', updatePos);
-    }
-  }, [hasUnsavedChanges]);
 
   useEffect(() => {
     const updateCountdowns = () => {
@@ -93,27 +85,43 @@ export default function OptionsPage() {
     updateCountdowns();
     const interval = setInterval(updateCountdowns, 1000);
     return () => clearInterval(interval);
-  }, [tabStates, timeout, savedTimeout]);
+  }, [tabStates, timeout, savedTimeout, hasUnsavedChanges]);
+
+  useEffect(() => {
+    const updatePos = () => {
+      if (saveButtonRef.current) {
+        const rect = saveButtonRef.current.getBoundingClientRect();
+        setTooltipPos({ x: rect.left, y: rect.top });
+      }
+    };
+    if (hasUnsavedChanges) {
+      updatePos();
+      window.addEventListener('scroll', updatePos);
+      return () => window.removeEventListener('scroll', updatePos);
+    }
+  }, [hasUnsavedChanges]);
 
   const handleSave = () => {
     if (chrome.storage) {
       chrome.storage.local.set({
         extension_settings: {
           timeoutMinutes: timeout,
-          whitelist: whitelist
+          whitelist: whitelist,
+          allowFreezePinned: allowFreezePinned,
+          allowFreezeMediaPlaying: allowFreezeMediaPlaying
         }
       }, () => {
         setSaved(true);
         setHasUnsavedChanges(false);
         setSavedTimeout(timeout);
-        initialValues.current = { timeout, whitelist };
+        initialValues.current = { timeout, whitelist, allowFreezePinned, allowFreezeMediaPlaying };
         setTimeout(() => setSaved(false), 2000);
         chrome.runtime.sendMessage({ action: 'settingsChanged' });
       });
     } else {
       setSaved(true);
       setHasUnsavedChanges(false);
-      initialValues.current = { timeout, whitelist };
+      initialValues.current = { timeout, whitelist, allowFreezePinned, allowFreezeMediaPlaying };
       setTimeout(() => setSaved(false), 2000);
     }
   };
@@ -181,6 +189,50 @@ export default function OptionsPage() {
                 {timeout} {i18n('settings_minutes')}
               </div>
             </div>
+          </section>
+
+          <section className="bg-slate-900/50 border border-white/5 rounded-3xl p-8 backdrop-blur-sm">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400">
+                <Cog className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-white">{i18n('settings_general_options')}</h2>
+                <p className="text-sm text-slate-500">{i18n('settings_general_options_desc')}</p>
+              </div>
+            </div>
+
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={allowFreezePinned}
+                onChange={(e) => {
+                  setAllowFreezePinned(e.target.checked);
+                  setHasUnsavedChanges(true);
+                }}
+                className="w-5 h-5 rounded border-white/20 bg-slate-800 text-[#569ac4] focus:ring-[#569ac4] focus:ring-offset-0 cursor-pointer"
+              />
+              <div>
+                <span className="text-slate-200 group-hover:text-white transition-colors">{i18n('settings_allow_freeze_pinned')}</span>
+                <p className="text-xs text-slate-500">{i18n('settings_allow_freeze_pinned_desc')}</p>
+              </div>
+            </label>
+
+            <label className="flex items-center gap-3 cursor-pointer group mt-4">
+              <input
+                type="checkbox"
+                checked={allowFreezeMediaPlaying}
+                onChange={(e) => {
+                  setAllowFreezeMediaPlaying(e.target.checked);
+                  setHasUnsavedChanges(true);
+                }}
+                className="w-5 h-5 rounded border-white/20 bg-slate-800 text-[#569ac4] focus:ring-[#569ac4] focus:ring-offset-0 cursor-pointer"
+              />
+              <div>
+                <span className="text-slate-200 group-hover:text-white transition-colors">{i18n('settings_allow_freeze_media')}</span>
+                <p className="text-xs text-slate-500">{i18n('settings_allow_freeze_media_desc')}</p>
+              </div>
+            </label>
           </section>
 
           <section className="bg-slate-900/50 border border-white/5 rounded-3xl p-8 backdrop-blur-sm">

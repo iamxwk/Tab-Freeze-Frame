@@ -22,7 +22,7 @@ const DEFAULT_TIMEOUT = 20;
 // Initialize when installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.set({
-    [STORAGE_KEYS.SETTINGS]: { timeoutMinutes: DEFAULT_TIMEOUT },
+    [STORAGE_KEYS.SETTINGS]: { timeoutMinutes: DEFAULT_TIMEOUT, allowFreezePinned: false },
     [STORAGE_KEYS.TABS]: {},
   });
 
@@ -90,6 +90,9 @@ async function checkAndFreezeTabs() {
       if (isWhitelisted) continue;
     }
 
+    // Check pinned tab setting
+    if (!settings?.allowFreezePinned && tab.pinned) continue;
+    if (!settings?.allowFreezeMediaPlaying && tab.audible) continue;
     const state = tabStates[tab.id];
     const lastActive = state?.lastActive || 0;
 

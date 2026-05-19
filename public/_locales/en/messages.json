@@ -55,6 +55,30 @@
     "message": "Automatically suspend tabs after idle time",
     "description": "Timeout section description"
   },
+  "settings_general_options": {
+    "message": "General Options",
+    "description": "General options section title"
+  },
+  "settings_general_options_desc": {
+    "message": "Various extension settings",
+    "description": "General options section description"
+  },
+  "settings_allow_freeze_pinned": {
+    "message": "Allow freezing pinned tabs",
+    "description": "Option to allow freezing pinned tabs"
+  },
+  "settings_allow_freeze_pinned_desc": {
+    "message": "When enabled, pinned tabs can also be frozen",
+    "description": "Description for pinned tabs option"
+  },
+  "settings_allow_freeze_media": {
+    "message": "Allow freezing tabs playing audio/video",
+    "description": "Option to allow freezing tabs with media playing"
+  },
+  "settings_allow_freeze_media_desc": {
+    "message": "When enabled, tabs with audio/video playing can also be frozen",
+    "description": "Description for media playing option"
+  },
   "settings_whitelist_title": {
     "message": "URL Whitelist",
     "description": "Whitelist section title"

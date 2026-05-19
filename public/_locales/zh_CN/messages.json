@@ -55,6 +55,30 @@
     "message": "标签页闲置多长时间后自动挂起",
     "description": "Timeout section description"
   },
+  "settings_general_options": {
+    "message": "常规选项",
+    "description": "General options section title"
+  },
+  "settings_general_options_desc": {
+    "message": "各种扩展设置",
+    "description": "General options section description"
+  },
+  "settings_allow_freeze_pinned": {
+    "message": "允许冻结固定标签",
+    "description": "Option to allow freezing pinned tabs"
+  },
+  "settings_allow_freeze_pinned_desc": {
+    "message": "启用后，固定的标签页也可以被冻结",
+    "description": "Description for pinned tabs option"
+  },
+  "settings_allow_freeze_media": {
+    "message": "允许冻结正在播放音视频的标签",
+    "description": "Option to allow freezing tabs with media playing"
+  },
+  "settings_allow_freeze_media_desc": {
+    "message": "启用后，有音视频正在播放的标签页也可以被冻结",
+    "description": "Description for media playing option"
+  },
   "settings_whitelist_title": {
     "message": "网址白名单",
     "description": "Whitelist section title"
